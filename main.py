@@ -26,7 +26,7 @@ class MainSingleton(object):
     def error(self, error_message):
         print(error_message)
         print("Exiting...")
-        e   xit()
+        exit()
 
     # the input that is common to both operations
     def define_base_user_dependent_variables(self):
@@ -93,6 +93,8 @@ class MainSingleton(object):
         self.new_directory_path = os.path.join(
             self.directory_to_use, self.temporary_cloned_dir_name)
 
+        os.chdir(self.new_directory_path)
+
         # an array of this format: Array<[action, conditionPath]>
         # the condition is the file or dir that must exist in the new_directory so
         # the special action can have any effect (this comment continues the prev. comment)
@@ -103,9 +105,16 @@ class MainSingleton(object):
             processedConditionPath = os.path.join(
                 self.new_directory_path, conditionPath)
             print(processedConditionPath, os.path.exists(processedConditionPath))
-            os.path.exists(processedConditionPath) and special_update_action
+            os.path.exists(processedConditionPath) and special_update_action()
+
+    def replace_dir_in_the_old_to_the_new_dir(self, dirname):
+        in_the_old_dir = os.path.join(self.old_directory_path, dirname)
+        in_the_new_dir = os.path.join(self.new_directory_path, dirname)
+        os.replace(in_the_old_dir, in_the_new_dir)
 
     def node_modules_action(self):
+        self.replace_dir_in_the_old_to_the_new_dir("node_modules")
+        os.system("yarn")
 
 
 if __name__ == "__main__":
