@@ -1,4 +1,5 @@
 import os
+import shutil
 import sys
 
 
@@ -22,6 +23,7 @@ class MainSingleton(object):
         os.chdir(self.directory_to_use)
         self.clone_github_project()
         self.operation_to_do == "UPDATE" and self.special_update_actions()
+        self.clean()
 
     def error(self, error_message):
         print(error_message)
@@ -87,13 +89,25 @@ class MainSingleton(object):
         command_to_clone = f"git clone https://github.com/ProMikeCoder2020/{self.github_project_name} {self.temporary_cloned_dir_name}"
         os.system(command_to_clone)
 
+    def clean(self):
+        self.delete_old_dir()
+        self.rename_new_dir()
+
+    def delete_old_dir(self):
+        # windows cmd sucks😂...
+        os.system(r"rmdir /s /q" + " " + r'"' + self.old_directory_path + r'"')
+
+    def rename_new_dir(self):
+        new_name = self.new_directory_path.replace(
+            self.temporary_cloned_dir_name, self.github_project_name)
+        print(self.new_directory_path, new_name)
+        os.replace(self.new_directory_path, new_name)
+
     def special_update_actions(self):
         self.old_directory_path = os.path.join(
             self.directory_to_use, self.github_project_name)
         self.new_directory_path = os.path.join(
             self.directory_to_use, self.temporary_cloned_dir_name)
-
-        os.chdir(self.new_directory_path)
 
         # an array of this format: Array<[action, conditionPath]>
         # the condition is the file or dir that must exist in the new_directory so
